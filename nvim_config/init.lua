@@ -40,6 +40,12 @@ P.S. You can delete this when you're done too. It's your config now :)
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
+
+if vim.g.started_by_firenvim == true
+then
+  vim.cmd("set guifont=IosevkaTerm\\ Nerd\\ Font:h12")
+end
+
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -180,6 +186,7 @@ require('lazy').setup({
     -- See `:help ibl`
     main = 'ibl',
     opts = {},
+    ft = { "lua", "python", "c" }
   },
 
   -- "gc" to comment visual regions/lines
@@ -220,6 +227,7 @@ require('lazy').setup({
   --       Uncomment any of the lines below to enable them.
   require 'kickstart.plugins.autoformat',
   require 'custom.plugins.harpoon',
+  require 'custom.plugins.firenvim',
   require 'custom.plugins.kanagawa',
   require 'custom.plugins.vimwiki',
   require 'custom.plugins.startup',
@@ -242,7 +250,7 @@ require('lazy').setup({
 vim.o.hlsearch = false
 
 -- Make line numbers default
-vim.wo.number = true
+vim.wo.rnu = true
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
@@ -250,14 +258,17 @@ vim.o.mouse = 'a'
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 -- Enable break indent
-vim.o.breakindent = true
-
+vim.opt.smartindent = true
+vim.opt.breakindent = true
+vim.opt.autoindent = true
 -- Save undo history
 vim.o.undofile = true
 
 -- Case-insensitive searching UNLESS \C or capital in search
 vim.o.ignorecase = true
 vim.o.smartcase = true
+vim.cmd('hi! LineNr guibg=none ctermbg=none')
+vim.cmd(':hi SignColumn guibg=NONE')
 
 -- Keep signcolumn on by default
 vim.wo.signcolumn = 'yes'
@@ -276,6 +287,34 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 
 -- [[ Basic Keymaps ]]
+vim.keymap.set("n", "ů", ";")
+
+vim.keymap.set("x", "<leader>p", [["_dP]])
+
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "copy selected to system clipboard" })
+vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "copy line to system clipboard" })
+-- keep selection after indent/dedent
+local nmap = function(key, effect)
+  vim.keymap.set('n', key, effect, { silent = true, noremap = true })
+end
+
+local vmap = function(key, effect)
+  vim.keymap.set('v', key, effect, { silent = true, noremap = true })
+end
+
+local imap = function(key, effect)
+  vim.keymap.set('i', key, effect, { silent = true, noremap = true })
+end
+vmap('>', '>gv')
+vmap('<', '<gv')
+
+-- remove search highlight on esc
+nmap('<esc>', '<cmd>noh<cr>')
+nmap('n', "nzz")
+nmap('<c-d>', '<c-d>zz')
+nmap('<c-u>', '<c-u>zz')
+
+nmap("<leader>pv", vim.cmd.Ex)
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
